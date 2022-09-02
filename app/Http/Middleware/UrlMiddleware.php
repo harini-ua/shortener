@@ -36,6 +36,15 @@ class UrlMiddleware
             return abort(404);
         }
 
-        return $next($request);
+        $response = $next($request);
+
+        $response->header("Expires", Carbon::now()->subDay()->format("D, d M Y H:i:s") . " GMT");
+        $response->header("Last-Modified", gmdate("D, d M Y H:i:s") . " GMT");
+        $response->header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        $response->header("Cache-Control", "post-check=0, pre-check=0", false);
+        $response->header("Pragma", "no-cache");
+        $response->header("Connection", "close");
+
+        return $response;
     }
 }
